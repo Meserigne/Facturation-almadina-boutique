@@ -53,8 +53,62 @@ class SecurityService {
     return hash.toString() === storedHash;
   }
 
-  // Générer un token de session
-  generateSessionToken() {
+  // Gestion des sessions
+  createSession(username) {
+    const sessionToken = this.generateSecureToken();
+    const sessionData = {
+      username,
+      sessionToken,
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + this.sessionTimeout).toISOString(),
+      isActive: true,
+      loginTime: new Date().toISOString()
+    };
+    
+    this.encryptAndStore('user_session', sessionData);
+    return sessionToken;
+  }
+
+  // Sauvegarder une session
+  saveSession(sessionData) {
+    this.encryptAndStore('user_session', sessionData);
+  }
+
+  // Vérifier si la session est valide
+  isSessionValid() {
+    try {
+      const sessionData = this.getDecryptedData('user_session');
+      if (!sessionData || !sessionData.isActive) {
+        return false;
+      }
+      
+      const now = new Date();
+      const expiresAt = new Date(sessionData.expiresAt);
+      
+      if (now > expiresAt) {
+        this.clearSession();
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la vérification de session:', error);
+      return false;
+    }
+  }
+
+  // Récupérer les données de session
+  getSession() {
+    try {
+      return this.getDecryptedData('user_session');
+    } catch (error) {
+      console.error('Erreur lors de la récupération de session:', error);
+      return null;
+    }
+  }
+
+  // Générer un token de session sécurisé
+  generateSecureToken() {
     const timestamp = Date.now();
     const randomData = CryptoJS.lib.WordArray.random(256/8);
     const tokenData = {
@@ -62,13 +116,48 @@ class SecurityService {
       random: randomData.toString(),
       expires: timestamp + this.sessionTimeout
     };
-    return this.encrypt(tokenData);
+    return this.encrypt(JSON.stringify(tokenData));
   }
 
-  // Valider un token de session
+  // Chiffrer et stocker des données
+  encryptAndStore(key, data) {
+    try {
+      const encrypted = this.encrypt(JSON.stringify(data));
+      localStorage.setItem(key, encrypted);
+      return true;
+    } catch (error) {
+      console.error('Erreur de stockage sécurisé:', error);
+      return false;
+    }
+  }
+
+  // Récupérer des données chiffrées
+  getDecryptedData(key) {
+    try {
+      const encrypted = localStorage.getItem(key);
+      if (!encrypted) return null;
+      const decrypted = this.decrypt(encrypted);
+      return JSON.parse(decrypted);
+    } catch (error) {
+      console.error('Erreur de récupération sécurisée:', error);
+      return null;
+    }
+  }
+
+  // Effacer la session
+  clearSession() {
+    localStorage.removeItem('user_session');
+  }
+
+  // Générer un token de session (méthode legacy)
+  generateSessionToken() {
+    return this.generateSecureToken();
+  }
+
+  // Valider un token de session (méthode legacy)
   validateSessionToken(token) {
     try {
-      const tokenData = this.decrypt(token);
+      const tokenData = JSON.parse(this.decrypt(token));
       if (!tokenData) return false;
       
       const now = Date.now();

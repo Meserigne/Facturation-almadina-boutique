@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   BellIcon,
   MagnifyingGlassIcon,
   UserCircleIcon,
   SunIcon,
-  MoonIcon
+  MoonIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
 const Header = () => {
   const { ui, actions, products, invoices } = useApp();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+
+  // Fermer le menu utilisateur quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Get page title based on current route
   const getPageTitle = () => {
@@ -95,13 +114,36 @@ const Header = () => {
           </button>
 
           {/* User menu */}
-          <div className="relative">
-            <button className="flex items-center space-x-2 p-2 rounded-lg text-gray-500 hover:text-primary-600 hover:bg-gray-100 transition-all duration-200">
+          <div className="relative" ref={userMenuRef}>
+            <button 
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center space-x-2 p-2 rounded-lg text-gray-500 hover:text-primary-600 hover:bg-gray-100 transition-all duration-200"
+            >
               <UserCircleIcon className="h-6 w-6" />
-              <span className="hidden md:block text-sm font-medium text-gray-300">
-                Admin
+              <span className="hidden md:block text-sm font-medium text-gray-700">
+                {user?.username || 'Admin'}
               </span>
             </button>
+            
+            {/* Dropdown menu */}
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                  <p className="font-medium">{user?.username || 'Admin'}</p>
+                  <p className="text-xs text-gray-500">Al Madinah Boutique</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    logout();
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
+                  Se déconnecter
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
