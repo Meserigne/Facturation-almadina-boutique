@@ -149,6 +149,28 @@ class SecurityService {
     localStorage.removeItem('user_session');
   }
 
+  // Vérifier si une tentative de connexion est autorisée
+  canAttemptLogin(username = 'admin') {
+    try {
+      const lockoutStatus = this.checkAccountLockout(username);
+      return !lockoutStatus.locked;
+    } catch (error) {
+      console.error('Erreur lors de la vérification des tentatives:', error);
+      return true; // Permettre la connexion en cas d'erreur
+    }
+  }
+
+  // Obtenir le temps de verrouillage restant
+  getLockoutTimeRemaining(username = 'admin') {
+    try {
+      const lockoutStatus = this.checkAccountLockout(username);
+      return lockoutStatus.locked ? lockoutStatus.remainingTime : 0;
+    } catch (error) {
+      console.error('Erreur lors du calcul du temps de verrouillage:', error);
+      return 0;
+    }
+  }
+
   // Générer un token de session (méthode legacy)
   generateSessionToken() {
     return this.generateSecureToken();
