@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { EyeIcon, EyeSlashIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
-import { useApp } from '../context/AppContext';
 import securityService from '../services/securityService';
 
 const Login = ({ onLogin }) => {
-  const { showToast } = useApp();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -12,6 +10,7 @@ const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -50,7 +49,9 @@ const Login = ({ onLogin }) => {
       // Vérifier les tentatives de connexion
       if (!securityService.canAttemptLogin()) {
         const lockoutTime = securityService.getLockoutTimeRemaining();
-        showToast(`Trop de tentatives. Réessayez dans ${Math.ceil(lockoutTime / 60)} minutes.`, 'error');
+        setErrors({ 
+          general: `Trop de tentatives. Réessayez dans ${Math.ceil(lockoutTime / 60)} minutes.` 
+        });
         setIsLoading(false);
         return;
       }
@@ -69,14 +70,17 @@ const Login = ({ onLogin }) => {
         securityService.recordLoginAttempt(true);
         const sessionToken = securityService.createSession(formData.username);
         
-        showToast('Connexion réussie ! Bienvenue dans Al Madinah Boutique', 'success');
+        setSuccessMessage('Connexion réussie ! Redirection en cours...');
+        setErrors({});
         
-        // Appeler la fonction de connexion du parent
-        onLogin({
-          username: formData.username,
-          sessionToken,
-          loginTime: new Date().toISOString()
-        });
+        // Délai pour afficher le message de succès
+        setTimeout(() => {
+          onLogin({
+            username: formData.username,
+            sessionToken,
+            loginTime: new Date().toISOString()
+          });
+        }, 1000);
 
       } else {
         // Connexion échouée
@@ -84,12 +88,13 @@ const Login = ({ onLogin }) => {
         setErrors({ 
           general: 'Nom d\'utilisateur ou mot de passe incorrect' 
         });
-        showToast('Identifiants incorrects', 'error');
       }
 
     } catch (error) {
       console.error('Erreur de connexion:', error);
-      showToast('Erreur de connexion. Veuillez réessayer.', 'error');
+      setErrors({ 
+        general: 'Erreur de connexion. Veuillez réessayer.' 
+      });
     }
 
     setIsLoading(false);
@@ -117,6 +122,12 @@ const Login = ({ onLogin }) => {
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3">
                 <p className="text-sm text-red-600">{errors.general}</p>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                <p className="text-sm text-green-600">{successMessage}</p>
               </div>
             )}
 
