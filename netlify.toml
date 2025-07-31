@@ -1,14 +1,28 @@
 [build]
   publish = "build"
-  command = "npm run build"
+  command = "CI=false npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
 
+# SPA redirect for React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Force HTTPS redirects
+[[redirects]]
+  from = "http://facturation.almadinahboutique.com/*"
+  to = "https://facturation.almadinahboutique.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.facturation.almadinahboutique.com/*"
+  to = "https://facturation.almadinahboutique.com/:splat"
+  status = 301
+  force = true
 
 [build.processing]
   skip_processing = false

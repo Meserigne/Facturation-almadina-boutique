@@ -1,0 +1,10 @@
+# Netlify redirects file for React SPA
+# Handle client-side routing
+/*    /index.html   200
+
+# Force HTTPS
+http://facturation.almadinahboutique.com/*  https://facturation.almadinahboutique.com/:splat  301!
+http://www.facturation.almadinahboutique.com/*  https://facturation.almadinahboutique.com/:splat  301!
+
+# Handle API routes if needed
+/api/*  /.netlify/functions/:splat  200
