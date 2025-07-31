@@ -15,14 +15,21 @@
 
 # Force HTTPS redirects
 [[redirects]]
-  from = "http://facturation.almadinahboutique.com/*"
-  to = "https://facturation.almadinahboutique.com/:splat"
+  from = "http://facture.almadinahboutique.com/*"
+  to = "https://facture.almadinahboutique.com/:splat"
   status = 301
   force = true
 
 [[redirects]]
-  from = "http://www.facturation.almadinahboutique.com/*"
-  to = "https://facturation.almadinahboutique.com/:splat"
+  from = "http://www.facture.almadinahboutique.com/*"
+  to = "https://facture.almadinahboutique.com/:splat"
+  status = 301
+  force = true
+
+# Redirect old facturation domain to new facture domain
+[[redirects]]
+  from = "https://facturation.almadinahboutique.com/*"
+  to = "https://facture.almadinahboutique.com/:splat"
   status = 301
   force = true
 

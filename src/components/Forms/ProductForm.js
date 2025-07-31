@@ -20,7 +20,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [productImage, setProductImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [useImageUpload, setUseImageUpload] = useState(process.env.NODE_ENV === 'development');
+  const [useImageUpload, setUseImageUpload] = useState(true); // Upload local activé par défaut
 
   // Charger l'image existante si on modifie un produit
   useEffect(() => {
@@ -292,7 +292,8 @@ const ProductForm = ({ product, onSave, onCancel }) => {
               <ImageUpload
                 onImageSelect={handleImageSelect}
                 currentImage={productImage}
-                maxSize={5}
+                maxSize={20}
+                showPreviewSize={true}
                 className=""
               />
             ) : (
