@@ -1,13 +1,11 @@
 {
   "files": {
-    "main.css": "/Facturation-almadina-boutique/static/css/main.c34b7323.css",
-    "main.js": "/Facturation-almadina-boutique/static/js/main.8b6cc730.js",
-    "index.html": "/Facturation-almadina-boutique/index.html",
-    "main.c34b7323.css.map": "/Facturation-almadina-boutique/static/css/main.c34b7323.css.map",
-    "main.8b6cc730.js.map": "/Facturation-almadina-boutique/static/js/main.8b6cc730.js.map"
+    "main.css": "/Facturation-almadina-boutique/static/css/main.2d48b726.css",
+    "main.js": "/Facturation-almadina-boutique/static/js/main.a8e84cc9.js",
+    "index.html": "/Facturation-almadina-boutique/index.html"
   },
   "entrypoints": [
-    "static/css/main.c34b7323.css",
-    "static/js/main.8b6cc730.js"
+    "static/css/main.2d48b726.css",
+    "static/js/main.a8e84cc9.js"
   ]
 }
