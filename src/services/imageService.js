@@ -1,12 +1,15 @@
+import githubPagesService from './githubPagesService';
+
 class ImageService {
   constructor() {
     this.storageKey = 'alamadinah_product_images';
+    this.githubPages = githubPagesService;
     this.initStorage();
   }
 
   initStorage() {
-    if (!localStorage.getItem(this.storageKey)) {
-      localStorage.setItem(this.storageKey, JSON.stringify({}));
+    if (!this.githubPages.getItem(this.storageKey)) {
+      this.githubPages.setItem(this.storageKey, JSON.stringify({}));
     }
   }
 
@@ -24,7 +27,7 @@ class ImageService {
         size: this.calculateImageSize(imageData)
       };
 
-      localStorage.setItem(this.storageKey, JSON.stringify(images));
+      this.githubPages.setItem(this.storageKey, JSON.stringify(images));
       return imageId;
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de l\'image:', error);
@@ -73,7 +76,7 @@ class ImageService {
   // Récupérer toutes les images
   getAllImages() {
     try {
-      return JSON.parse(localStorage.getItem(this.storageKey)) || {};
+      return JSON.parse(this.githubPages.getItem(this.storageKey)) || {};
     } catch (error) {
       console.error('Erreur lors de la lecture des images:', error);
       return {};
@@ -143,7 +146,7 @@ class ImageService {
   // Importer des images (pour restauration)
   importImages(imagesData) {
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(imagesData));
+      this.githubPages.setItem(this.storageKey, JSON.stringify(imagesData));
       return true;
     } catch (error) {
       console.error('Erreur lors de l\'importation des images:', error);

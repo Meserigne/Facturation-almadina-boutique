@@ -8,7 +8,9 @@ const ImageUpload = ({
   maxSize = 20, // MB - Augmenté à 20MB
   acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/bmp'],
   className = '',
-  showPreviewSize = true,
+  showPreviewSize = false,
+  onImageSave = null, // Nouvelle prop pour sauvegarder l'image
+  showSaveButton = false, // Afficher le bouton sauvegarder
   allowMultiple = false
 }) => {
   const [preview, setPreview] = useState(currentImage);
@@ -103,11 +105,33 @@ const ImageUpload = ({
 
   const handleRemoveImage = () => {
     setPreview(null);
+    setFileInfo(null);
     onImageSelect(null, null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
     showSuccess('Image supprimée');
+  };
+
+  // Fonction pour sauvegarder l'image immédiatement
+  const handleSaveImage = async () => {
+    if (!preview || !fileInfo) {
+      showError('Aucune image à sauvegarder');
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      
+      if (onImageSave) {
+        await onImageSave(preview, fileInfo);
+        showSuccess(`Image "${fileInfo.name}" sauvegardée avec succès!`);
+      } else {
+        showSuccess('Image prête à être sauvegardée avec le produit');
+      }
+    } catch (error) {
+      showError('Erreur lors de la sauvegarde de l\'image');
+      console.error('Erreur sauvegarde image:', error);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const openFileDialog = () => {
@@ -160,6 +184,17 @@ const ImageUpload = ({
           )}
           
           <div className="absolute top-2 right-2 flex space-x-2">
+            {showSaveButton && (
+              <button
+                type="button"
+                onClick={handleSaveImage}
+                disabled={isProcessing}
+                className="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Enregistrer l'image"
+              >
+                {isProcessing ? '...' : '💾 Enregistrer'}
+              </button>
+            )}
             <button
               type="button"
               onClick={handleRemoveImage}

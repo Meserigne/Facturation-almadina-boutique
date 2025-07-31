@@ -104,6 +104,27 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     setImageFile(file);
   };
 
+  // Fonction pour sauvegarder l'image immédiatement
+  const handleImageSave = async (imageData, fileInfo) => {
+    try {
+      // Générer un ID temporaire pour l'image si le produit n'existe pas encore
+      const tempProductId = product?.id || `temp_${Date.now()}`;
+      
+      // Sauvegarder l'image via le service d'images
+      const imageService = await import('../../services/imageService');
+      const imageId = imageService.default.saveProductImage(tempProductId, imageData, fileInfo.name);
+      
+      // Mettre à jour l'état local
+      setProductImage(imageData);
+      setImageFile(fileInfo);
+      
+      return imageId;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde de l\'image:', error);
+      throw error;
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -291,9 +312,11 @@ const ProductForm = ({ product, onSave, onCancel }) => {
             {useImageUpload ? (
               <ImageUpload
                 onImageSelect={handleImageSelect}
+                onImageSave={handleImageSave}
                 currentImage={productImage}
                 maxSize={20}
                 showPreviewSize={true}
+                showSaveButton={true}
                 className=""
               />
             ) : (
