@@ -182,20 +182,21 @@ const Products = () => {
         {filteredProducts.map(product => {
           const stockStatus = getStockStatus(product);
           const productImage = imageService.getProductImage(product.id);
+          const localImage = productImage;
           
           return (
             <div key={product.id} className="bg-white rounded-lg shadow-soft overflow-hidden card-hover">
               {/* Product image */}
               <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-                {productImage ? (
+                {product.image ? (
                   <img
-                    src={productImage.imageData}
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-48 object-cover"
                   />
-                ) : product.image ? (
+                ) : localImage ? (
                   <img
-                    src={product.image}
+                    src={localImage.imageData}
                     alt={product.name}
                     className="w-full h-48 object-cover"
                   />

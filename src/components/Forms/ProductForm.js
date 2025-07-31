@@ -20,6 +20,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [productImage, setProductImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [useImageUpload, setUseImageUpload] = useState(process.env.NODE_ENV === 'development');
 
   // Charger l'image existante si on modifie un produit
   useEffect(() => {
@@ -255,13 +256,69 @@ const ProductForm = ({ product, onSave, onCancel }) => {
             />
           </div>
 
-          {/* Image Upload */}
-          <ImageUpload
-            onImageSelect={handleImageSelect}
-            currentImage={productImage}
-            maxSize={5}
-            className=""
-          />
+          {/* Image Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Image du produit
+            </label>
+            
+            {/* Toggle between URL and Upload */}
+            <div className="mb-4">
+              <div className="flex space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="imageType"
+                    checked={!useImageUpload}
+                    onChange={() => setUseImageUpload(false)}
+                    className="mr-2"
+                  />
+                  URL d'image
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="imageType"
+                    checked={useImageUpload}
+                    onChange={() => setUseImageUpload(true)}
+                    className="mr-2"
+                  />
+                  Upload local
+                </label>
+              </div>
+            </div>
+
+            {useImageUpload ? (
+              <ImageUpload
+                onImageSelect={handleImageSelect}
+                currentImage={productImage}
+                maxSize={5}
+                className=""
+              />
+            ) : (
+              <div>
+                <input
+                  type="url"
+                  value={formData.image}
+                  onChange={(e) => handleChange('image', e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="https://exemple.com/image.jpg"
+                />
+                {formData.image && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.image}
+                      alt="Aperçu"
+                      className="w-32 h-32 object-cover rounded-lg border"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
