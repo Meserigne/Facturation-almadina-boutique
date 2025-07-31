@@ -1,11 +1,11 @@
 {
   "files": {
     "main.css": "/Facturation-almadina-boutique/static/css/main.2d48b726.css",
-    "main.js": "/Facturation-almadina-boutique/static/js/main.a8e84cc9.js",
+    "main.js": "/Facturation-almadina-boutique/static/js/main.2c5e1eba.js",
     "index.html": "/Facturation-almadina-boutique/index.html"
   },
   "entrypoints": [
     "static/css/main.2d48b726.css",
-    "static/js/main.a8e84cc9.js"
+    "static/js/main.2c5e1eba.js"
   ]
 }
